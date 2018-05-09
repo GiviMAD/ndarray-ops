@@ -45,9 +45,11 @@ function makeOp(user_args) {
   for(var i=0; i<user_args.args.length; ++i) {
     args.push("a"+i)
   }
-  var wrapper = new Function("P", [
-    "return function ", user_args.funcName, "_ndarrayops(", args.join(","), ") {P(", args.join(","), ");return a0}"
-  ].join(""))
+  var wrapper = (P) => {
+    var fnObj = {[user_args.funcName+"_ndarrayops"]: function () { P.apply(P, arguments); return arguments[0]; } }
+    console.log(fnObj[user_args.funcName + "_ndarrayops"].name);
+    return fnObj[user_args.funcName + "_ndarrayops"];
+  }
   return wrapper(pcompile(user_args))
 }
 
